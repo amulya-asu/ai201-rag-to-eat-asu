@@ -13,7 +13,8 @@
      Why is this knowledge valuable, and why is it hard to find through official channels?
      Example: "Student reviews of CS professors at [university] — useful because official
      course descriptions don't reflect teaching style, exam difficulty, or workload." -->
-
+ The domain I chose is food and dining.to-eat-asu is simple rag application where students can gather quick opinions on dining, restaurants at
+  ASU and near ASU, it is tedious to go through reviews every time, especially when you are hangry.There are almost no official channels to find about an opinion  you resonate with, which is why I choose this.
 ---
 
 ## Document Sources
@@ -22,18 +23,31 @@
      Be specific: include URLs, subreddit names, forum thread titles, or file names.
      Aim for variety — sources that together cover different subtopics or perspectives. -->
 
+Sources fall into three tiers: **student voice** (Reddit), **dining-hall reviews** (Google), and **official baseline** (ASU dining hub, used for place names/metadata only).
+
 | # | Source | Type | URL or file path |
 |---|--------|------|-----------------|
-| 1 | | | |
-| 2 | | | |
-| 3 | | | |
-| 4 | | | |
-| 5 | | | |
-| 6 | | | |
-| 7 | | | |
-| 8 | | | |
-| 9 | | | |
-| 10 | | | |
+| 1 | r/ASU — good food places near campus | Reddit thread | https://www.reddit.com/r/ASU/comments/1m9oy5f/what_are_good_food_places_that_asu_students_have/ |
+| 2 | r/ASU — food places on Tempe campus | Reddit thread | https://www.reddit.com/r/ASU/comments/1mvz5dr/what_are_some_food_places_to_eat_on_the_tempe/ |
+| 3 | r/ASU — coffee & study spots | Reddit thread | https://www.reddit.com/r/ASU/comments/1lxiglu/good_place_to_get_coffee_and_study/ |
+| 4 | r/ASU — vegetarian food quality | Reddit thread | https://www.reddit.com/r/ASU/comments/1r0z9ow/how_is_the_quality_of_food_for_vegetarian_at/ |
+| 5 | r/ASU — dining halls with good food | Reddit thread | https://www.reddit.com/r/ASU/comments/1oovggk/do_yall_know_any_dining_halls_with_good_food_or/ |
+| 6 | r/ASU — best meal plan | Reddit thread | https://www.reddit.com/r/ASU/comments/1mbriqo/best_meal_plan/ |
+| 7 | r/ASU — meal plan for incoming student | Reddit thread | https://www.reddit.com/r/ASU/comments/1eqmtsf/what_meal_plan_would_you_recommend_as_an_incoming/ |
+| 8 | r/ASU — cheap lunch near campus | Reddit thread | https://www.reddit.com/r/ASU/comments/1n7qw0f/any_cheap_food_spots_to_have_lunch_in_or_near_the/ |
+| 9 | r/ASU — restaurants to explore | Reddit thread | https://www.reddit.com/r/ASU/comments/1nea45i/restaurants_to_explore/ |
+| 10 | r/Tempe — lunch or breakfast spots | Reddit thread | https://www.reddit.com/r/Tempe/comments/1loouyy/anywhere_in_tempe_that_serves_lunch_or_breakfast/ |
+| 11 | r/Tempe — restaurants with delivery | Reddit thread | https://www.reddit.com/r/Tempe/comments/1nnadb8/tempe_restaurants_with_bakedin_delivery/ |
+| 12 | r/Tempe — restaurants to explore | Reddit thread | https://www.reddit.com/r/Tempe/comments/1ne9aj6/restaurants_to_explore/ |
+| 13 | r/Tempe — food to try in Tempe | Reddit thread | https://www.reddit.com/r/Tempe/comments/1rjc3op/food_to_try_in_tempe/ |
+| 14 | Pitchforks Dining Hall — reviews | Google reviews | Google Maps — Pitchforks Dining Hall, ASU Tempe |
+| 15 | Hassayampa Dining Hall — reviews | Google reviews | Google Maps — Hassayampa Dining Hall, ASU Tempe |
+| 16 | Tooker House Dining — reviews | Google reviews | Google Maps — Tooker House Dining, ASU Tempe |
+| 17 | Barrett (Mark Jacobs) Dining — reviews | Google reviews | Google Maps — Barrett Dining, ASU Tempe |
+| 18 | Memorial Union — reviews | Google reviews | Google Maps — Memorial Union, ASU Tempe |
+| 19 | ASU dining hub — Restaurants | Official site (metadata) | https://asu.mydininghub.com/en/tempe-campus/locations?cat=Restaurants |
+| 20 | ASU dining hub — Convenience | Official site (metadata) | https://asu.mydininghub.com/en/tempe-campus/locations?cat=Convenience |
+| 21 | ASU dining hub — Dining Halls | Official site (metadata) | https://asu.mydininghub.com/en/tempe-campus/locations?cat=Dining+Halls |
 
 ---
 

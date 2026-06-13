@@ -18,3 +18,7 @@ chroma/
 
 # macOS
 .DS_Store
+
+# Collected corpus — keep traceable review text / threads (and PII) out of the repo
+raw/
+documents/
