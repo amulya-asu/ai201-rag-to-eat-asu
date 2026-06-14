@@ -8,5 +8,5 @@ requests>=2.32.0   # for collect_places_reviews.py (Google Places API)
 # gradio>=6.9.0
 # streamlit>=1.40.0
 
-# Document ingestion — add if your documents/ folder contains .pdf files:
-# pdfplumber==0.11.4
+# Document ingestion — dining-hub PDFs extracted by process_dininghub.py:
+pdfplumber==0.11.4

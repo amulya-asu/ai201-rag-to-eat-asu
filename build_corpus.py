@@ -28,6 +28,7 @@ OUT_REVIEWS = Path("documents/reviews")
 # Reddit comment noise filters.
 SKIP_AUTHORS = {"AutoModerator", "[deleted]", ""}
 MIN_CHARS = 15
+MIN_LETTERS = 12  # below this (emoji/punctuation removed) = pure reaction, not signal
 
 # Canonical dining-hall names (fixes typos / trailing "Dining").
 PLACE_CANON = {
@@ -94,7 +95,11 @@ def clean_reddit_file(path):
         body = html.unescape((c.get("body") or "").strip())
         author = c.get("author") or ""
         score = c.get("score", 0)
-        if author in SKIP_AUTHORS or body in ("[deleted]", "[removed]") or len(body) < MIN_CHARS:
+        letters = re.sub(r"[^A-Za-z]", "", body)  # emoji/punctuation stripped
+        if (author in SKIP_AUTHORS or body in ("[deleted]", "[removed]")
+                or len(body) < MIN_CHARS
+                or len(letters) < MIN_LETTERS  # rule 1: drop pure-reaction noise
+                or score < 0):                 # rule 2: drop downvoted comments
             continue
         body = re.sub(r"\s*\n\s*", " ", body)
         lines.append(f"{'  ' * depth}- (▲{score}) {body}")
