@@ -28,7 +28,13 @@ OUT_REVIEWS = Path("documents/reviews")
 # Reddit comment noise filters.
 SKIP_AUTHORS = {"AutoModerator", "[deleted]", ""}
 MIN_CHARS = 15
-MIN_LETTERS = 12  # below this (emoji/punctuation removed) = pure reaction, not signal
+MIN_LETTERS = 12  # below this (URLs/emoji/punctuation removed) = not enough signal
+# Whole-comment social pleasantries with no food content — dropped.
+PLEASANTRY = re.compile(
+    r"^(thanks?( (you|so much|a lot|for .*))?|ty|np|no problem|same( here)?|agreed|"
+    r"exactly|this|yep|yup|fr+|ikr+)[.! ]*$",
+    re.I,
+)
 
 # Canonical dining-hall names (fixes typos / trailing "Dining").
 PLACE_CANON = {
@@ -95,11 +101,13 @@ def clean_reddit_file(path):
         body = html.unescape((c.get("body") or "").strip())
         author = c.get("author") or ""
         score = c.get("score", 0)
-        letters = re.sub(r"[^A-Za-z]", "", body)  # emoji/punctuation stripped
+        text_no_url = re.sub(r"https?://\S+", "", body).strip()
+        letters = re.sub(r"[^A-Za-z]", "", text_no_url)  # URLs/emoji/punct stripped
         if (author in SKIP_AUTHORS or body in ("[deleted]", "[removed]")
                 or len(body) < MIN_CHARS
-                or len(letters) < MIN_LETTERS  # rule 1: drop pure-reaction noise
-                or score < 0):                 # rule 2: drop downvoted comments
+                or len(letters) < MIN_LETTERS         # rule 1: too little text (e.g. bare link)
+                or score < 0                          # rule 2: downvoted
+                or PLEASANTRY.match(text_no_url)):    # rule 3: contentless pleasantry
             continue
         body = re.sub(r"\s*\n\s*", " ", body)
         lines.append(f"{'  ' * depth}- (▲{score}) {body}")
