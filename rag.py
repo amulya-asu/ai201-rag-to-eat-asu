@@ -37,6 +37,7 @@ LLM_MODEL = "llama-3.3-70b-versatile"
 TOP_K = 6                 # chunks sent to the LLM
 PER_SOURCE_FETCH = 8      # candidates pulled from each source pool
 SOURCE_CAP = 3            # max chunks any one source may contribute to the final set
+PLACE_REVIEW_CAP = 5      # when a place is named, guarantee up to this many of ITS reviews
 MAX_DISTANCE = 0.60       # best match beyond this -> honest refusal (the "matcha" case)
 UPVOTE_MAX_BONUS = 0.03   # tiny nudge: high-upvote Reddit comments win ties
 
@@ -91,41 +92,57 @@ def retrieve(col, question, k=TOP_K):
     """
     cand = {}
 
+    def hit(cid, doc, meta, dist):
+        return {"id": cid, "text": doc, "meta": meta, "dist": dist,
+                "rank": dist - _upvote_bonus(meta)}
+
     def add(res):
         for cid, doc, meta, dist in zip(
             res["ids"][0], res["documents"][0],
             res["metadatas"][0], res["distances"][0],
         ):
             if cid not in cand:
-                cand[cid] = {"text": doc, "meta": meta, "dist": dist,
-                             "rank": dist - _upvote_bonus(meta)}
+                cand[cid] = hit(cid, doc, meta, dist)
 
     # #3 per-source mixing: query each source pool separately
     for src in ("reddit", "review", "dininghub"):
         add(col.query(query_texts=[question], n_results=PER_SOURCE_FETCH,
                       where={"source": src}))
 
-    # #2 routing: if the question names a known place, pull that place's chunks too
+    # #2 routing: a named place GUARANTEES that place's reviews (praise AND
+    # complaints) so place-specific answers aren't a one-sided slice.
+    place_hits = []
     q_pad = f" {question.lower()} "
     for key, place in KNOWN_PLACES.items():
         if key in q_pad:
-            add(col.query(query_texts=[question], n_results=4, where={"place": place}))
+            res = col.query(query_texts=[question], n_results=10, where={"place": place})
+            place_hits = [hit(*z) for z in zip(
+                res["ids"][0], res["documents"][0],
+                res["metadatas"][0], res["distances"][0])]
             break
 
     ranked = sorted(cand.values(), key=lambda c: c["rank"])
-    if not ranked or ranked[0]["dist"] > MAX_DISTANCE:
-        return ranked[:1], False  # distance gate -> refuse
+    pool = place_hits + ranked
+    if not pool or min(c["dist"] for c in pool) > MAX_DISTANCE:
+        return sorted(pool, key=lambda c: c["dist"])[:1], False  # distance gate -> refuse
 
-    # merge with per-source cap so no single source dominates the final set
-    final, counts = [], {}
-    for c in ranked:
-        src = c["meta"]["source"]
-        if counts.get(src, 0) >= SOURCE_CAP:
-            continue
+    final, seen, counts = [], set(), {}
+
+    def take(c):
         final.append(c)
-        counts[src] = counts.get(src, 0) + 1
+        seen.add(c["id"])
+        counts[c["meta"]["source"]] = counts.get(c["meta"]["source"], 0) + 1
+
+    # guaranteed: the named place's own reviews (balanced spread), bypassing the cap
+    for c in sorted(place_hits, key=lambda c: c["rank"])[:PLACE_REVIEW_CAP]:
+        take(c)
+    # fill remaining slots with the general mix, capped so no source dominates
+    for c in ranked:
         if len(final) >= k:
             break
+        if c["id"] in seen or counts.get(c["meta"]["source"], 0) >= SOURCE_CAP:
+            continue
+        take(c)
     return final, True
 
 
