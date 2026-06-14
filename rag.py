@@ -135,18 +135,22 @@ def build_context(hits):
     )
 
 
-def answer(question):
+def ask(question):
+    """End-to-end RAG. Returns {'answer': str, 'sources': [str, ...]} so both the
+    CLI and the Gradio UI can consume the same logic."""
     col = get_collection()
     hits, ok = retrieve(col, question)
 
     if not ok:
         best = hits[0]["dist"] if hits else 1.0
-        print(
-            f"\nI don't have student data close enough to answer that "
-            f"(best match {best:.3f} > {MAX_DISTANCE}).\n"
-            "Try a different food/dining question about ASU Tempe."
-        )
-        return
+        return {
+            "answer": (
+                f"I don't have student data close enough to answer that "
+                f"(best match {best:.3f} > {MAX_DISTANCE}). "
+                "Try a different food/dining question about ASU Tempe."
+            ),
+            "sources": [],
+        }
 
     context = build_context(hits)
     load_dotenv()
@@ -159,11 +163,21 @@ def answer(question):
             {"role": "user", "content": f"CONTEXT:\n{context}\n\nQUESTION: {question}"},
         ],
     )
-    print("\n" + resp.choices[0].message.content.strip())
+    sources = [
+        f"[{i}] {source_tag(h['meta'])} (dist {h['dist']:.3f}) — {h['meta']['url']}"
+        for i, h in enumerate(hits, 1)
+    ]
+    return {"answer": resp.choices[0].message.content.strip(), "sources": sources}
 
-    print("\nSources:")
-    for i, h in enumerate(hits, 1):
-        print(f"  [{i}] {source_tag(h['meta'])} (dist {h['dist']:.3f}) — {h['meta']['url']}")
+
+def answer(question):
+    """CLI wrapper around ask()."""
+    res = ask(question)
+    print("\n" + res["answer"])
+    if res["sources"]:
+        print("\nSources:")
+        for s in res["sources"]:
+            print(f"  {s}")
 
 
 def main():

@@ -4,9 +4,10 @@ groq==0.15.0
 python-dotenv==1.0.1
 requests>=2.32.0   # for collect_places_reviews.py (Google Places API)
 
-# Query interface — add whichever you use for Milestone 5:
-# gradio>=6.9.0
-# streamlit>=1.40.0
+# Query interface (Milestone 5) — Streamlit chosen over Gradio: gradio>=6.9
+# requires huggingface-hub>=1.2, which conflicts with the huggingface-hub<1.0
+# that sentence-transformers 3.4.1 needs. Streamlit has no such dependency.
+streamlit==1.58.0
 
 # Document ingestion — dining-hub PDFs extracted by process_dininghub.py:
 pdfplumber==0.11.4
